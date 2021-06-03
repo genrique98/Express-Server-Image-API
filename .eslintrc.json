@@ -1,0 +1,9 @@
+{
+    "rules": {
+        "eqeqeq": "off"
+    },
+    "parserOptions": {
+        "sourceType": "module",
+        "ecmaVersion": "2020"
+    }
+}
