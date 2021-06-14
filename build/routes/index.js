@@ -4,12 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
-var teachers_1 = __importDefault(require("./api/teachers"));
 var images_1 = __importDefault(require("./api/images"));
 var routes = express_1.default.Router();
 routes.get('/', function (req, res) {
-    res.send('connected!');
+    res.status(200).send('connected!');
 });
-routes.use('/teachers', teachers_1.default);
 routes.use('/images', images_1.default);
 exports.default = routes;

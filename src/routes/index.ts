@@ -1,14 +1,12 @@
-import express from 'express';
-import teachers from './api/teachers';
+import express, { Router } from 'express';
 import images from './api/images';
 
-const routes = express.Router();
+const routes: Router = express.Router();
 
 routes.get('/', (req, res) => {
-    res.send('connected!');
+  res.status(200).send('connected!');
 });
 
-routes.use('/teachers', teachers);
 routes.use('/images', images);
 
 export default routes;
