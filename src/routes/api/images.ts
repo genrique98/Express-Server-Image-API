@@ -1,33 +1,9 @@
 import express, { Router } from 'express';
-import { existsSync, promises as fsPromises } from 'fs';
-import sharp, { OutputInfo } from 'sharp';
+import { existsSync } from 'fs';
+import {checkPath, logSharp} from '../../utilities/util'
 
 const images: Router = express.Router();
 let outputPath: string;
-
-const checkPath = async (filePath: string) => {
-  // check image exists in "full" folder
-  try {
-    await fsPromises.access(filePath);
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-const logSharp = async (filePath: string, width: number, height: number) => {
-  try {
-    const {size, format}: OutputInfo = await sharp(filePath)
-      .resize(width, height)
-      .toFile(outputPath);
-    console.log(`Image processed with Sharp`);
-    console.log(
-      `Size: ${size}, Width: ${width}, Height: ${height}, Format: ${format}`
-    );
-  } catch (err) {
-    console.log(err);
-
-  }
-};
 
 const getImage = (
   req: express.Request,
@@ -40,6 +16,7 @@ const getImage = (
 
   checkPath(filePath);
 
+  // if query paramaters exist
   if (req.query.width && req.query.height) {
     const width: number = parseInt(req.query.width as unknown as string);
     const height: number = parseInt(req.query.height as unknown as string);
@@ -48,7 +25,7 @@ const getImage = (
 
     // if outputPath does not exist, use sharp
     if (!existsSync(outputPath)) {
-      logSharp(filePath, width, height);
+      logSharp(filePath, outputPath, width, height);
     } else {
       console.log(`Image accessed from disk`);
     }
