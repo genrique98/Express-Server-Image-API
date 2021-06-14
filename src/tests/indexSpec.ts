@@ -16,10 +16,16 @@ describe('Test image processing endpoint responses', () => {
     expect(response.status).toBe(200);
   });
 
+  it('does not get the images endpoint with parameter "filename=fjd" ', async () => {
+    const response = await request.get('/api/images?filename=fjd');
+    expect(response.status).not.toBe(200);
+  });
+
   it('gets and process the images endpoint with parameters "filename=fjord&width=200&height=200" ', async () => {
     const response = await request.get(
       '/api/images?filename=fjord&width=200&height=200'
     );
     expect(response.status).toBe(200);
   });
+
 });

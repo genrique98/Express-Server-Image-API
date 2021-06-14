@@ -69,6 +69,18 @@ describe('Test image processing endpoint responses', function () {
             }
         });
     }); });
+    it('does not get the images endpoint with parameter "filename=fjd" ', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, request.get('/api/images?filename=fjd')];
+                case 1:
+                    response = _a.sent();
+                    expect(response.status).not.toBe(200);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
     it('gets and process the images endpoint with parameters "filename=fjord&width=200&height=200" ', function () { return __awaiter(void 0, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
@@ -77,6 +89,18 @@ describe('Test image processing endpoint responses', function () {
                 case 1:
                     response = _a.sent();
                     expect(response.status).toBe(200);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    it('does not get and process the images endpoint with parameters "filename=fjord&width=200&height=k" ', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, request.get('/api/images?filename=fjord&width=200&height=k')];
+                case 1:
+                    response = _a.sent();
+                    expect(response.status).not.toBe(200);
                     return [2 /*return*/];
             }
         });
