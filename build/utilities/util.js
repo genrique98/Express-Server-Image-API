@@ -35,10 +35,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkPath = void 0;
+exports.logSharp = exports.checkPath = void 0;
 var fs_1 = require("fs");
-// import sharp, { OutputInfo } from 'sharp';
+var sharp_1 = __importDefault(require("sharp"));
 var checkPath = function (filePath) { return __awaiter(void 0, void 0, void 0, function () {
     var err_1;
     return __generator(this, function (_a) {
@@ -58,6 +61,26 @@ var checkPath = function (filePath) { return __awaiter(void 0, void 0, void 0, f
     });
 }); };
 exports.checkPath = checkPath;
-// module.exports = {
-//     checkPath,
-// };
+var logSharp = function (filePath, outputPath, width, height) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, size, format, err_2;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _b.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, sharp_1.default(filePath)
+                        .resize(width, height)
+                        .toFile(outputPath)];
+            case 1:
+                _a = _b.sent(), size = _a.size, format = _a.format;
+                console.log("Image processed with Sharp");
+                console.log("Size: " + size + ", Width: " + width + ", Height: " + height + ", Format: " + format);
+                return [3 /*break*/, 3];
+            case 2:
+                err_2 = _b.sent();
+                console.log(err_2);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); };
+exports.logSharp = logSharp;
