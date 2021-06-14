@@ -1,65 +1,85 @@
-import express from 'express';
-import {promises as fsPromises} from 'fs';
-import sharp from 'sharp';
+import express, { Router } from 'express';
+import { existsSync, promises as fsPromises } from 'fs';
+import sharp, { OutputInfo } from 'sharp';
 
-var path = require('path');
+const images: Router = express.Router();
+let outputPath: string;
 
-const images = express.Router();
+const checkPath = async (filePath: string) => {
+  // check image exists in "full" folder
+  try {
+    await fsPromises.access(filePath);
+  } catch (err) {
+    console.log(err);
+  }
+};
 
-// upon request create thumbnail using parameters, and add caching. 
-// make sure you can run "node build/index", write tests
+const logSharp = async (filePath: string, width: number, height: number) => {
+  try {
+    const {size, format}: OutputInfo = await sharp(filePath)
+      .resize(width, height)
+      .toFile(outputPath);
+    console.log(`Image processed with Sharp`);
+    console.log(
+      `Size: ${size}, Width: ${width}, Height: ${height}, Format: ${format}`
+    );
+  } catch (err) {
+    console.log(err);
 
-// const useSharp = (req: express.Request, res: express.Response, next: Function):void => {
-//     req.query.width : number;
+  }
+};
 
-//     const filePath = `images/full/${req.query.filename}.jpg`;
-//     const outputPath = `images/thumb/${req.query.filename}_thumb.jpg`;
-//     sharp(filePath).resize(req.query., req.query.height).toFile(outputPath).then(info => {console.log(info)}).catch(err => {console.log(err)});
+const getImage = (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+): void => {
+  const filename: string = req.query.filename as unknown as string;
+  const filePath: string = `images/full/${filename}.jpg`;
+  outputPath = filePath;
 
-//     next();
-// }
+  checkPath(filePath);
 
-images.get('/', (req: express.Request, res: express.Response, next: Function) => {
+  if (req.query.width && req.query.height) {
+    const width: number = parseInt(req.query.width as unknown as string);
+    const height: number = parseInt(req.query.height as unknown as string);
 
-    var options = {
-        root: process.cwd(),
-        dotfiles: 'deny',
-        headers: {
-          'x-timestamp': Date.now(),
-          'x-sent': true
-        }
+    outputPath = `images/thumb/${filename}_thumb.jpg`;
+
+    // if outputPath does not exist, use sharp
+    if (!existsSync(outputPath)) {
+      logSharp(filePath, width, height);
+    } else {
+      console.log(`Image accessed from disk`);
     }
+  }
+  next();
+};
 
-    // ?filename=fjord&width=200&height=200
-    const param = req.query;
-    const filename = (param.filename as unknown) as string;
-    const filePath: string = `images/full/${filename}.jpg`; //const filePath = `images/full/${req.query.filename}.jpg`;
-    var outputPath: string = filePath;
+images.get(
+  '/',
+  getImage,
+  (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const options: unknown = {
+      root: process.cwd(),
+      dotfiles: 'deny',
+      headers: {
+        'x-timestamp': Date.now(),
+        'x-sent': true,
+      },
+    };
 
-    if (req.query.width && req.query.height) {
-
-        const width: number = parseInt((req.query.width as unknown) as string); 
-        const height: number = parseInt((req.query.height as unknown) as string); 
-
-        outputPath = `images/thumb/${filename}_thumb.jpg`;
-
-        // check if outputPath already exists, if it does, dont use sharp, just return path
-
-
-        sharp(filePath).resize(width, height).toFile(outputPath).then(info => {console.log(info)}).catch(err => {console.log(err)});
-    } 
-
-    
-    process.nextTick(() => {
-        res.sendFile(outputPath, options, function (err) {
-            if (err) {
-                next(err)
-            } else {
-                console.log('Sent:', outputPath)
-            }
-        });
-    });
-
-});
+    setTimeout(() => {
+      res.status(200).sendFile(outputPath, options, function (err) {
+        if (err) {
+          next(err);
+          console.log(err);
+        } else {
+          console.log('Sent:', outputPath);
+        }
+      });
+    }, 1000);
+  }
+);
 
 export default images;
