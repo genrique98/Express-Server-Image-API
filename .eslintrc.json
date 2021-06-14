@@ -1,9 +1,12 @@
 {
-    "rules": {
-        "eqeqeq": "off"
-    },
+    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "sourceType": "module",
-        "ecmaVersion": "2020"
+        "ecmaVersion": "2017",
+        "allowImportExportEverywhere": false,
+        "ecmaFeatures": {
+            "globalReturn": false
+        }
     }
+    
 }
