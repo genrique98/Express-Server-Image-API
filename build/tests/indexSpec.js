@@ -41,6 +41,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var supertest_1 = __importDefault(require("supertest"));
 var index_1 = __importDefault(require("../index"));
+var util_1 = require("../utilities/util");
+var fs_1 = require("fs");
 var request = supertest_1.default(index_1.default);
 describe('Test endpoint responses', function () {
     it('gets the api endpoint', function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -57,11 +59,13 @@ describe('Test endpoint responses', function () {
     }); });
 });
 describe('Test image processing endpoint responses', function () {
-    it('gets the images endpoint with parameter "filename=fjord" ', function () { return __awaiter(void 0, void 0, void 0, function () {
+    it('gets the images endpoint with parameter "filename=fjord", expects response to be image/jpeg', function () { return __awaiter(void 0, void 0, void 0, function () {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, request.get('/api/images?filename=fjord')];
+                case 0: return [4 /*yield*/, request
+                        .get('/api/images?filename=fjord')
+                        .expect('Content-type', 'image/jpeg')];
                 case 1:
                     response = _a.sent();
                     expect(response.status).toBe(200);
@@ -76,7 +80,7 @@ describe('Test image processing endpoint responses', function () {
                 case 0: return [4 /*yield*/, request.get('/api/images?filename=fjd')];
                 case 1:
                     response = _a.sent();
-                    expect(response.status).not.toBe(200);
+                    expect(response.status).toBe(404);
                     return [2 /*return*/];
             }
         });
@@ -85,7 +89,9 @@ describe('Test image processing endpoint responses', function () {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, request.get('/api/images?filename=fjord&width=200&height=200')];
+                case 0: return [4 /*yield*/, request
+                        .get('/api/images?filename=fjord&width=200&height=200')
+                        .expect('Content-type', 'image/jpeg')];
                 case 1:
                     response = _a.sent();
                     expect(response.status).toBe(200);
@@ -93,14 +99,20 @@ describe('Test image processing endpoint responses', function () {
             }
         });
     }); });
-    it('does not get and process the images endpoint with parameters "filename=fjord&width=200&height=k" ', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var response;
+    it('process the image using Sharp', function () { return __awaiter(void 0, void 0, void 0, function () {
+        var filename, width, height, filePath, outputPath;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, request.get('/api/images?filename=fjord&width=200&height=k')];
+                case 0:
+                    filename = 'fjord';
+                    width = 200;
+                    height = 200;
+                    filePath = "images/full/" + filename + ".jpg";
+                    outputPath = "images/thumb/" + filename + "_thumb_" + width + "x" + height + ".jpg";
+                    return [4 /*yield*/, util_1.logSharp(filePath, outputPath, width, height)];
                 case 1:
-                    response = _a.sent();
-                    expect(response.status).not.toBe(200);
+                    _a.sent();
+                    expect(fs_1.existsSync(outputPath)).toBeTruthy();
                     return [2 /*return*/];
             }
         });
