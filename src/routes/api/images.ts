@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 import { existsSync } from 'fs';
-import {checkPath, logSharp} from '../../utilities/util'
+import { checkPath, logSharp } from '../../utilities/util';
 
 const images: Router = express.Router();
 let outputPath: string;
@@ -11,7 +11,7 @@ const getImage = (
   next: express.NextFunction
 ): void => {
   const filename: string = req.query.filename as unknown as string;
-  const filePath: string = `images/full/${filename}.jpg`;
+  const filePath = `images/full/${filename}.jpg`;
   outputPath = filePath;
 
   checkPath(filePath);
@@ -21,7 +21,7 @@ const getImage = (
     const width: number = parseInt(req.query.width as unknown as string);
     const height: number = parseInt(req.query.height as unknown as string);
 
-    outputPath = `images/thumb/${filename}_thumb.jpg`;
+    outputPath = `images/thumb/${filename}_thumb_${width}x${height}.jpg`;
 
     // if outputPath does not exist, use sharp
     if (!existsSync(outputPath)) {

@@ -17,7 +17,7 @@ var getImage = function (req, res, next) {
     if (req.query.width && req.query.height) {
         var width = parseInt(req.query.width);
         var height = parseInt(req.query.height);
-        outputPath = "images/thumb/" + filename + "_thumb.jpg";
+        outputPath = "images/thumb/" + filename + "_thumb_" + width + "x" + height + ".jpg";
         // if outputPath does not exist, use sharp
         if (!fs_1.existsSync(outputPath)) {
             util_1.logSharp(filePath, outputPath, width, height);
